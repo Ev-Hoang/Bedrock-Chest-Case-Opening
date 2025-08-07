@@ -15,6 +15,7 @@ You are **not allowed** to:
 This mod is provided "as is", without warranty of any kind. Use at your own risk.
 
 Download Link (v0.1 Beta) : https://github.com/Ev-Hoang/Bedrock-Chest-Case-Opening/releases/tag/Beta
+This version is for 1.8.9 Minecraft only. Not planning to update on every version.
 
 For permission requests, contact the author at: Brickycraft0401@gmail.com
 
