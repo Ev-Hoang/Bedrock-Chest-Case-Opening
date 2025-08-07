@@ -1,0 +1,16 @@
+[
+{
+  "modid": "bedrockcaseopening",
+  "name": "Bedrock Case Opening",
+  "description": "Bedrock Chest opening like CSGO Case",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Ev"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
