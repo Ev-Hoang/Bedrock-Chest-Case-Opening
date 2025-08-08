@@ -1,4 +1,4 @@
-# Bedrock-Chest-Case-Opening (Beta v0.1 - no breaking error - use at your own risk)
+# Bedrock-Chest-Case-Opening 
 
 Copyright (c) 2025 Ev
 
@@ -13,6 +13,7 @@ You are **not allowed** to:
 - Claim this mod or parts of its code as your own.
 
 Download Link (v0.1 Beta) : https://github.com/Ev-Hoang/Bedrock-Chest-Case-Opening/releases/tag/Beta
+Download Link on ModRinth : https://modrinth.com/mod/bcco
 This version is for 1.8.9 Minecraft only. Not planning to update on every version.
 
 ## ☕ Support Me
