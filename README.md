@@ -4,7 +4,7 @@
 
 ## Download link:
 - Github : https://github.com/Ev-Hoang/Bedrock-Chest-Case-Opening/releases/tag/Beta
-- ModRinth : https://modrinth.com/mod/bcco
+- ModRinth : [https://modrinth.com/mod/bcco](https://github.com/Ev-Hoang/Bedrock-Chest-Case-Opening/releases)
 - This version is for 1.8.9 Minecraft only. Not planning to update on every version.
 
 ## ☕ Support Me
