@@ -41,15 +41,12 @@ public class CustomDropAnimationGui extends GuiScreen {
     private float offsetX = 0f;
     
     private float currentScrollSpeed;
-    private float slowTime = 7f; 
-    private int slowDistance = 20; // In box count
+    private float slowTime = MyConfig.slowTime; 
+    private int slowDistance = MyConfig.slowDistance; // In box count
     
-    //private boolean isSlowingDown = false;
     private boolean hasShownResult = false;
     
     private int lastBoxDistance = 0;
-    private boolean hasBoxEndCrossJudgementLine = false;
-    private boolean hasBoxStartCrossJudgementLine = false;
 
     private long lastFrameTime = 0L;
 
