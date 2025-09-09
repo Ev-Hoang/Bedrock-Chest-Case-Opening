@@ -1,0 +1,16 @@
+[
+{
+  "modid": "bedrockcaseopening",
+  "name": "Bedrock Case Opening",
+  "description": "Bedrock Chest opening like CSGO Case",
+  "version": "0.2",
+  "mcversion": "1.8.9",
+  "url": "https://hypixel.net/threads/a-mod-that-have-csgo-case-animation-in-bedrock-chest-floor-7.5968701/",
+  "updateUrl": "",
+  "authorList": ["Ev"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
