@@ -28,6 +28,11 @@ out/
 out/
 
 # === Eclipse ===
+# eclipse
+bin
+*.launch
+.settings
+.metadata
 .classpath
 .project
 .settings/
@@ -46,9 +51,21 @@ run/
 saves/
 resourcepacks/
 crash-reports/
+# idea
+out
+*.ipr
+*.iws
+*.iml
+.idea
 
 # === Logs ===
 logs/
+# gradle
+build
+.gradle
 
 # === Temporary files ===
 *.launch
+# other
+eclipse
+run

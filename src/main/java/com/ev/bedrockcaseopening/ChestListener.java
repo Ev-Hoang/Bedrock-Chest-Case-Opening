@@ -4,10 +4,13 @@ import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ChatComponentText;
 
 public class ChestListener {
 	
@@ -34,6 +37,16 @@ public class ChestListener {
                     event.gui = new GuiInterceptChest(container);
                     System.out.println("gui intercept called");
                 }
+                
+                if (lower.hasCustomName() && lower.getDisplayName().getUnformattedText().contains("Croesus")) { 
+                	EntityPlayerSP player = Minecraft.getMinecraft().thePlayer;
+                	player.addChatMessage(new ChatComponentText("Croesus"));
+                	
+                    for (int i = 0; i <= 30; i++) {
+                        ItemStack stack = lower.getStackInSlot(i);
+                        NBTDebugger.printAllTags(stack, player);
+                    }
+                }
             }
         }
     }
@@ -47,7 +60,6 @@ public class ChestListener {
         if (currentWorld != null && currentWorld != lastWorld) {
             lastWorld = currentWorld;
             hasPlayedAnimation = false;
-            System.out.println("World changed → reset animation");
         }
     }
 }
