@@ -48,3 +48,6 @@ crash-reports/
 
 # === Logs ===
 logs/
+
+# === Temporary files ===
+*.launch
