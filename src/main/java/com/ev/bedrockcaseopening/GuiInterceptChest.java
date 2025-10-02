@@ -42,7 +42,6 @@ public class GuiInterceptChest extends GuiContainer {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        //super.drawScreen(mouseX, mouseY, partialTicks);
     }
     
     @Override
@@ -91,51 +90,32 @@ public class GuiInterceptChest extends GuiContainer {
         if (delayTicks > 0) {
             delayTicks--;
         } else if (rewardToOpen != null) {
-            ChestListener.hasPlayedAnimation = true;
             Minecraft.getMinecraft().displayGuiScreen(new CustomDropAnimationGui(rewardToOpen));
         } else {
-            ChestListener.hasPlayedAnimation = true;
             Minecraft.getMinecraft().displayGuiScreen(ChestListener.originalGui);
         }
     }
     
-//    ChestListener.skipNext = true;
-//	Minecraft.getMinecraft().displayGuiScreen(ChestListener.originalGui);
     
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-        // Không vẽ gì hết
     }
     
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) {
-        // Không cho click
     }
 
     @Override
     protected void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
-        // Không cho kéo
     }
 
     @Override
     protected void mouseReleased(int mouseX, int mouseY, int state) {
-        // Không cho thả
     }
-
-//    @Override
-//    protected void keyTyped(char typedChar, int keyCode) {
-//        // Không cho gõ phím
-//    }
 
     @Override
     public void handleMouseInput() {
-        // Không xử lý gì hết
     }
-
-//    @Override
-//    public void handleKeyboardInput() {
-//        // Không xử lý gì hết
-//    }
 }
 
 
