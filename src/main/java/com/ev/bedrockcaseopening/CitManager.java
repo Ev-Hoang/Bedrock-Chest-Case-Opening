@@ -26,7 +26,7 @@ import java.util.zip.ZipFile;
 
 public class CitManager {
 
-    private final Map<String, ResourceLocation> citCache = new HashMap<>();
+    private final static Map<String, ResourceLocation> citCache = new HashMap<>();
 
     public CitManager() {
         ((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager())
@@ -73,16 +73,41 @@ public class CitManager {
 
         if (!ItemEnum.containsId(nbtId)) return;
         
-        String texturePath = props.getProperty("texture");
-        if (texturePath == null) {
-            String baseName = path.substring(path.lastIndexOf('/') + 1, path.length() - ".properties".length());
-            texturePath = baseName;
+        String textureProp = props.getProperty("texture");
+        String texturePath;
+
+        int lastSlash = path.lastIndexOf('/');
+        String folder = (lastSlash >= 0) ? path.substring(0, lastSlash) : "";
+
+        if (textureProp != null && !textureProp.isEmpty()) {
+            texturePath = textureProp;
+            if (texturePath.startsWith("/")) {
+                texturePath = texturePath.substring(1); // path tuyệt đối trong assets
+            } else {
+                // texture tương đối → nối folder
+                texturePath = folder + "/" + texturePath;
+            }
+
+            if (texturePath.endsWith(".png")) {
+                texturePath = texturePath.substring(0, texturePath.length() - 4);
+            }
+
+        } else {
+            // không có texture prop → dùng basename
+            String baseName = path.substring(lastSlash + 1, path.length() - ".properties".length());
+            texturePath = folder + "/" + baseName;
         }
 
-        ResourceLocation rl = new ResourceLocation("minecraft", "mcpatcher/cit/" + texturePath + ".png");
+        // loại bỏ prefix "assets/minecraft/"
+        String prefix = "assets/minecraft/";
+        if (texturePath.startsWith(prefix)) {
+            texturePath = texturePath.substring(prefix.length());
+        }
+
+        ResourceLocation rl = new ResourceLocation("minecraft", texturePath + ".png");
 
         citCache.put(nbtId, rl);
-        System.out.println(nbtId + " : " + "textures/cit/" + texturePath + ".png");
+        System.out.println(nbtId + " : " + texturePath + ".png");
     }
     
     private void checkEnchant(Properties props, String path) {
@@ -109,13 +134,10 @@ public class CitManager {
     }
 
 
-    public ResourceLocation getTexture(ItemStack stack) {
-        if (stack == null || !stack.hasDisplayName()) {
-            return null;
-        }
-        String normalized = normalize(stack.getDisplayName());
-        return citCache.getOrDefault(normalized,
+    public static ResourceLocation getTexture(String nbtId) {
+    	ResourceLocation rl = citCache.getOrDefault(nbtId,
                 new ResourceLocation("minecraft", "textures/item/diamond_sword.png"));
+    	return rl;
     }
 
     private String normalize(String s) {

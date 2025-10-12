@@ -52,10 +52,10 @@ public class CustomDropAnimationGui extends GuiScreen {
     private long guiOpenStartTime = -1;
     
     //===================== CAROUSEL LOGICS =============   
-    private final List<DungeonDropItem> carouselItems = new ArrayList<>();
+    private final List<BedrockFloorVII> carouselItems = new ArrayList<>();
     //List of item in the carousel, if everything corrects, the default will always be 50 for every animation.
 
-    private DungeonDropItem rewardItem;
+    private BedrockFloorVII rewardItem;
     //The highest tiered item, currently in the BedrockChest.
     
     private final int itemCount = 50;
@@ -101,7 +101,7 @@ public class CustomDropAnimationGui extends GuiScreen {
 //===================================================
 //	   				FUNCTIONS
 //===================================================    
-    public CustomDropAnimationGui(DungeonDropItem rewardItem) {
+    public CustomDropAnimationGui(BedrockFloorVII rewardItem) {
     	//First initialize of the CustomAnimationGUI class
     	// - get the reward item into the 44th slot.
     	// - the rest of the item is randomized.
@@ -122,17 +122,17 @@ public class CustomDropAnimationGui extends GuiScreen {
     }
 
     
-    private void rewardRandomizer(DungeonDropItem rewardItem) {
+    private void rewardRandomizer(BedrockFloorVII rewardItem) {
     	//Used to randomize all the other item slots except for the reward slots
     	// - Used base weight so that ultra rare item dont show up frequently.
     	// Note : I used my own algorithm to calculate position of rare items, its hard to explain, you can use AI to explain the code if u want to understand.
     	
     	//Create buckets of rarity item, to keep track of items while randomized, so that it doenst duplicate once it already rolled.
-    	List<List<DungeonDropItem>> rarityBuckets = new ArrayList<>();
+    	List<List<BedrockFloorVII>> rarityBuckets = new ArrayList<>();
     	for (int i = 0; i < 7; i++) {
     	    rarityBuckets.add(new ArrayList<>());
     	}
-    	for (DungeonDropItem item : DungeonDropItem.values()) {
+    	for (BedrockFloorVII item : BedrockFloorVII.values()) {
     	    int rarity = item.getRarityIndex();
     	    rarityBuckets.get(rarity - 1).add(item);
     	} 
@@ -198,7 +198,7 @@ public class CustomDropAnimationGui extends GuiScreen {
 		for(int i = 6 ; i >=0; i--) {
 			if (i == 6) { //Common case (repititive + fill the item slots)
 				for(int j = 0; j < rolls; j++) { 
-					DungeonDropItem randomItem = rarityBuckets.get(i).get(
+					BedrockFloorVII randomItem = rarityBuckets.get(i).get(
 	    	            ThreadLocalRandom.current().nextInt(rarityBuckets.get(i).size())
 	    	        );
 	    	        carouselItems.add(randomItem);

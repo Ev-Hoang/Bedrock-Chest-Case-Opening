@@ -12,7 +12,7 @@ import net.minecraft.nbt.NBTTagList;
 public class GuiInterceptChest extends GuiContainer {
 
 	private int delayTicks = 2;
-	private DungeonDropItem rewardToOpen = null;
+	private BedrockFloorVII rewardToOpen = null;
 	private boolean doneCollectingReward = false;
 	
     private final ContainerChest container;
@@ -52,7 +52,7 @@ public class GuiInterceptChest extends GuiContainer {
             doneCollectingReward = true;
 
             IInventory lower = container.getLowerChestInventory();
-            DungeonDropItem reward = null;
+            BedrockFloorVII reward = null;
             String dropitem = null;
 
             for (int i = 10; i <= 16; i++) {
@@ -77,7 +77,7 @@ public class GuiInterceptChest extends GuiContainer {
                 System.out.print("slot" + i + " " + normalized);
                 
                 try {
-                    DungeonDropItem item = DungeonDropItem.valueOf(normalized);
+                	BedrockFloorVII item = BedrockFloorVII.valueOf(normalized);
                     if (reward == null || item.getIndex() < reward.getIndex()) {
                         reward = item;
                     }

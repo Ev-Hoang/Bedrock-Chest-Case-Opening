@@ -2,8 +2,8 @@ package com.ev.bedrockcaseopening;
 
 import net.minecraft.util.ResourceLocation;
 
-public enum DungeonDropItem {
-    NECRONS_HANDLE(1, 1, new ResourceLocation("bedrockcaseopening", "textures/dungeonDropItem/necron_handle.png"), 14, 1),
+public enum BedrockFloorVII {
+    NECRONS_HANDLE(1, 1, CitManager.getTexture("NECRON_HANDLE"), 14, 1),
     SHADOW_WARP(2, 2, new ResourceLocation("bedrockcaseopening", "textures/dungeonDropItem/shadow_warp.png"), 1, 1),
     WITHER_SHIELD(3, 2, new ResourceLocation("bedrockcaseopening", "textures/dungeonDropItem/wither_shield.png"), 1, 1),
     IMPLOSION(4, 2, new ResourceLocation("bedrockcaseopening", "textures/dungeonDropItem/implosion.png"), 1, 1),
@@ -42,7 +42,7 @@ public enum DungeonDropItem {
     private final int frameCount;
     private final int frameTick;
     
-    DungeonDropItem(int index, int rarity, ResourceLocation image, int frameCount, int frameTick) {
+    BedrockFloorVII(int index, int rarity, ResourceLocation image, int frameCount, int frameTick) {
         this.index = index;
         this.rarity = rarity;
         this.image = image;
@@ -50,7 +50,7 @@ public enum DungeonDropItem {
         this.frameTick = frameTick;
     }
     
-    DungeonDropItem(int index, int rarity) {
+    BedrockFloorVII(int index, int rarity) {
         this(index, rarity, null, 1, 1);
     }
 
