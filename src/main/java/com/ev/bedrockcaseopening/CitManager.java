@@ -48,8 +48,6 @@ public class CitManager {
                 Minecraft.getMinecraft().getResourcePackRepository().getRepositoryEntries()) {
 
             IResourcePack pack = entry.getResourcePack();
-
-            // lấy tất cả file .properties trong cit/
             Set<String> propertyFiles = listFiles(pack, "mcpatcher/cit", ".properties");
 
             for (String path : propertyFiles) {
@@ -57,37 +55,8 @@ public class CitManager {
                     Properties props = new Properties();
                     props.load(in);
 
-                    // lấy id trong nbt.ExtraAttributes.id
-                    String nbtId = props.getProperty("nbt.ExtraAttributes.id");
-                    System.out.println(nbtId);
-                    if (nbtId == null) continue;
-
-                    if (!ItemEnum.containsId(nbtId)) continue;
-                    
-                    // check enchantments
-                    boolean enchantMatch = true; // mặc định true
-                    for (String key : props.stringPropertyNames()) {
-                        if (key.startsWith("nbt.ExtraAttributes.enchantments.")) {
-                            String enchantName = key.substring("nbt.ExtraAttributes.enchantments.".length());
-                            String expectedLevel = props.getProperty(key);
-
-                            if (!EnchantEnum.contains(enchantName, expectedLevel)) {
-                                enchantMatch = false;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (!enchantMatch) continue;
-                    String texturePath = props.getProperty("texture");
-                    if (texturePath == null) {
-                        String baseName = path.substring(path.lastIndexOf('/') + 1, path.length() - ".properties".length());
-                        texturePath = baseName;
-                    }
-
-                    ResourceLocation rl = new ResourceLocation("minecraft", "textures/cit/" + texturePath + ".png");
-
-                    citCache.put(nbtId, rl);
+                    checkID(props,path);
+                    checkEnchant(props, path);
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -96,6 +65,47 @@ public class CitManager {
         }
 
         System.out.println("[BCCO] CIT Cache built with " + citCache.size() + " entries.");
+    }
+    
+    private void checkID(Properties props, String path) {
+    	String nbtId = props.getProperty("nbt.ExtraAttributes.id");
+        if (nbtId == null) return;
+
+        if (!ItemEnum.containsId(nbtId)) return;
+        
+        String texturePath = props.getProperty("texture");
+        if (texturePath == null) {
+            String baseName = path.substring(path.lastIndexOf('/') + 1, path.length() - ".properties".length());
+            texturePath = baseName;
+        }
+
+        ResourceLocation rl = new ResourceLocation("minecraft", "mcpatcher/cit/" + texturePath + ".png");
+
+        citCache.put(nbtId, rl);
+        System.out.println(nbtId + " : " + "textures/cit/" + texturePath + ".png");
+    }
+    
+    private void checkEnchant(Properties props, String path) {
+        for (String key : props.stringPropertyNames()) {
+            if (key.startsWith("nbt.ExtraAttributes.enchantments.")) {
+                String enchantName = key.substring("nbt.ExtraAttributes.enchantments.".length());
+                String expectedLevel = props.getProperty(key);
+                
+                if (EnchantEnum.contains(enchantName, expectedLevel)) {
+                	String texturePath = props.getProperty("texture");
+                    if (texturePath == null) {
+                        String baseName = path.substring(path.lastIndexOf('/') + 1, path.length() - ".properties".length());
+                        texturePath = baseName;
+                    }
+                    ResourceLocation rl = new ResourceLocation("minecraft", "mcpatcher/cit/" + texturePath + ".png");
+                	String nbtId = enchantName + "_" + expectedLevel;
+                	
+                	citCache.put(nbtId, rl);
+                	System.out.println(nbtId + " : " + "mcpatcher/cit/" + texturePath + ".png");
+                    break;
+                }
+            }
+        }
     }
 
 
@@ -134,7 +144,6 @@ public class CitManager {
                     ZipEntry entry = entries.nextElement();
                     String name = entry.getName();
                     if (name.startsWith("assets/minecraft/" + folder) && name.endsWith(ext)) {
-                    	System.out.println("[BCCO] " + name + " : " + entry);
                         result.add(name.substring("assets/minecraft/".length()));
                     }
                 }

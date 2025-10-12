@@ -14,7 +14,7 @@ difficulty:0
 fancyGraphics:false
 ao:0
 renderClouds:false
-resourcePacks:["§aFurfSky Reborn §8§lOVERLAY§8.zip"]
+resourcePacks:["v14.1_16x_Hypixel_Skyblock_Pack.zip","§aFurfSky Reborn §8§lOVERLAY§8.zip"]
 incompatibleResourcePacks:[]
 lastServer:
 lang:en_US

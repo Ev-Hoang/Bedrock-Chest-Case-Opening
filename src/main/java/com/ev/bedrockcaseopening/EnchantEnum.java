@@ -1,8 +1,7 @@
 package com.ev.bedrockcaseopening;
 
 public enum EnchantEnum {
-    HELLFIRE_ENCHANT(1),
-    CUSTOM_BOOST(2),
+	ultimate_one_for_all(1),
     SOUL_DRAIN(3);
 
     private final int requiredLevel;
