@@ -57,6 +57,21 @@ public class ChestListener {
                     System.out.println("gui intercept called");
                 }
                 
+                if (lower.hasCustomName() && lower.getDisplayName().getUnformattedText().contains("Obsidian Chest")) {    
+            		
+                	if(isCroesus) {
+                		if (openedChest.containsKey(chestID)) return;
+                		openedChest.put(chestID, true);
+                	} else {
+                		if (hasPlayedAnimation) return;
+                		hasPlayedAnimation = true;
+                	}
+                	
+            		System.out.println("bedrock chest");
+                    event.gui = new GuiInterceptChest(container);
+                    System.out.println("gui intercept called");
+                }
+                
                 if (lower.hasCustomName() && lower.getDisplayName().getUnformattedText().contains("Catacombs")) {               
                 	if(!isCroesus) return;
                 	if(openedChest.containsKey(chestID)) return;

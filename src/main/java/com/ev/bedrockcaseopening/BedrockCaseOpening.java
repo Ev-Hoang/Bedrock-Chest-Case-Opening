@@ -12,6 +12,8 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 	)
 public class BedrockCaseOpening {
 	
+    private CitManager citManager; 
+	
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         MyConfig.init(event.getSuggestedConfigurationFile());
@@ -22,5 +24,8 @@ public class BedrockCaseOpening {
     	MinecraftForge.EVENT_BUS.register(new ChestListener());
     	MinecraftForge.EVENT_BUS.register(new ConfigEventHandler());
 
+        if (event.getSide().isClient()) {
+            citManager = new CitManager();
+        }
     }
 }
