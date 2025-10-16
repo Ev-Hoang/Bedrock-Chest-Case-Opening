@@ -3,7 +3,11 @@ package com.ev.bedrockcaseopening;
 import net.minecraft.util.ResourceLocation;
 
 public enum BedrockFloorVII {
-    NECRONS_HANDLE(1, 1, CitManager.getTexture("NECRON_HANDLE"), 14, 1),
+	//Temporaly, must change!!
+    NECRONS_HANDLE(1, 1, CitManager.getTextureData("NECRON_HANDLE").getRl(), CitManager.getTextureData("NECRON_HANDLE").getFrames(), CitManager.getTextureData("NECRON_HANDLE").getFrametime()),
+    //
+    
+    
     SHADOW_WARP(2, 2, new ResourceLocation("bedrockcaseopening", "textures/dungeonDropItem/shadow_warp.png"), 1, 1),
     WITHER_SHIELD(3, 2, new ResourceLocation("bedrockcaseopening", "textures/dungeonDropItem/wither_shield.png"), 1, 1),
     IMPLOSION(4, 2, new ResourceLocation("bedrockcaseopening", "textures/dungeonDropItem/implosion.png"), 1, 1),

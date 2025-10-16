@@ -3,18 +3,23 @@ package com.ev.bedrockcaseopening;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IResourcePack;
 import net.minecraft.client.resources.ResourcePackRepository;
+import net.minecraft.client.resources.data.AnimationMetadataSection;
 import net.minecraft.client.resources.AbstractResourcePack;
 import net.minecraft.client.resources.FileResourcePack;
 import net.minecraft.client.resources.FolderResourcePack;
 import net.minecraft.client.resources.IReloadableResourceManager;
+import net.minecraft.client.resources.IResource;
+import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.item.ItemStack;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,9 +29,17 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import javax.imageio.ImageIO;
+
+import java.io.InputStreamReader;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 public class CitManager {
 
-    private final static Map<String, ResourceLocation> citCache = new HashMap<>();
+    private final static Map<String, TextureData> citCache = new HashMap<>();
+    private IResourceManager rm = Minecraft.getMinecraft().getResourceManager();
 
     public CitManager() {
         ((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager())
@@ -82,9 +95,8 @@ public class CitManager {
         if (textureProp != null && !textureProp.isEmpty()) {
             texturePath = textureProp;
             if (texturePath.startsWith("/")) {
-                texturePath = texturePath.substring(1); // path tuyệt đối trong assets
+                texturePath = texturePath.substring(1);
             } else {
-                // texture tương đối → nối folder
                 texturePath = folder + "/" + texturePath;
             }
 
@@ -93,21 +105,70 @@ public class CitManager {
             }
 
         } else {
-            // không có texture prop → dùng basename
             String baseName = path.substring(lastSlash + 1, path.length() - ".properties".length());
             texturePath = folder + "/" + baseName;
         }
 
-        // loại bỏ prefix "assets/minecraft/"
         String prefix = "assets/minecraft/";
         if (texturePath.startsWith(prefix)) {
             texturePath = texturePath.substring(prefix.length());
         }
 
         ResourceLocation rl = new ResourceLocation("minecraft", texturePath + ".png");
+        int frameTime = getFrameTime(rm, rl);
+        int frames = getFrames(rm, rl);
 
-        citCache.put(nbtId, rl);
-        System.out.println(nbtId + " : " + texturePath + ".png");
+
+        citCache.put(nbtId, new TextureData(rl, frameTime , frames));
+        
+        //System.out.println(nbtId + " : " + texturePath + ".png");
+    }
+    
+    private int getFrameTime(IResourceManager rm, ResourceLocation rl) {
+        try {
+            ResourceLocation metaLoc = new ResourceLocation(
+                rl.getResourceDomain(),
+                rl.getResourcePath() + ".mcmeta"
+            );
+
+            IResource res = rm.getResource(metaLoc);
+            if (res == null) return 1;
+
+            JsonParser parser = new JsonParser();
+            JsonObject root = parser.parse(new InputStreamReader(res.getInputStream())).getAsJsonObject();
+
+            if (root.has("animation")) {
+                JsonObject anim = root.getAsJsonObject("animation");
+                if (anim.has("frametime")) {
+                	int ft = anim.get("frametime").getAsInt();
+                    return ft;
+                }
+            }
+
+        } catch (Exception e) {
+        }
+        return 1;
+    }
+    
+    public static int getFrames(IResourceManager rm, ResourceLocation rl) {
+        InputStream stream = null;
+        try {
+            IResource res = rm.getResource(rl);
+            stream = res.getInputStream();
+            BufferedImage img = ImageIO.read(stream);
+            if (img == null) return 1;
+
+            int width = img.getWidth();
+            int height = img.getHeight();
+
+            return Math.max(height / width, 1);
+        } catch (Exception e) {
+            return 1;
+        } finally {
+            if (stream != null) {
+                try { stream.close(); } catch (Exception ignored) {}
+            }
+        }
     }
     
     private void checkEnchant(Properties props, String path) {
@@ -125,7 +186,8 @@ public class CitManager {
                     ResourceLocation rl = new ResourceLocation("minecraft", "mcpatcher/cit/" + texturePath + ".png");
                 	String nbtId = enchantName + "_" + expectedLevel;
                 	
-                	citCache.put(nbtId, rl);
+                	//Will update later on !!
+                	//citCache.put(nbtId, rl);
                 	System.out.println(nbtId + " : " + "mcpatcher/cit/" + texturePath + ".png");
                     break;
                 }
@@ -134,15 +196,10 @@ public class CitManager {
     }
 
 
-    public static ResourceLocation getTexture(String nbtId) {
-    	ResourceLocation rl = citCache.getOrDefault(nbtId,
-                new ResourceLocation("minecraft", "textures/item/diamond_sword.png"));
-    	return rl;
-    }
-
-    private String normalize(String s) {
-        // ví dụ: "Necron's Handle" -> "necron_s_handle"
-        return s.toLowerCase().replace(" ", "_").replace("'", "");
+    public static TextureData getTextureData(String nbtId) {
+    	TextureData data = citCache.getOrDefault(nbtId,
+    			new TextureData(new ResourceLocation("minecraft", "textures/item/diamond_sword.png"),1,1));  	
+    	return data;
     }
 
     private Set<String> listFiles(IResourcePack pack, String folder, String ext) throws IOException {

@@ -8,6 +8,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.ChatComponentText;
 
 public class GuiInterceptChest extends GuiContainer {
 
@@ -57,6 +58,10 @@ public class GuiInterceptChest extends GuiContainer {
 
             for (int i = 10; i <= 16; i++) {
                 ItemStack stack = lower.getStackInSlot(i);
+                
+                Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(NBTUtils.getExtraAttributeId(stack)));               
+                String itemId = NBTUtils.getExtraAttributeId(stack);
+                
                 if (stack == null) continue;
                 if (stack.getItem() == Items.enchanted_book && stack.hasTagCompound()) {
                     NBTTagCompound tag = stack.getTagCompound();

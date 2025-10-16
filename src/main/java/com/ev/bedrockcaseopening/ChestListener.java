@@ -16,6 +16,7 @@ import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
 
 public class ChestListener {
@@ -75,10 +76,10 @@ public class ChestListener {
                 if (lower.hasCustomName() && lower.getDisplayName().getUnformattedText().contains("Catacombs")) {               
                 	if(!isCroesus) return;
                 	if(openedChest.containsKey(chestID)) return;
-                	isCatacombsChest = true;
+                	isCatacombsChest = true;                	
                 }
                 
-                if (lower.hasCustomName() && lower.getDisplayName().getUnformattedText().contains("Croesus")) {             	
+                if (lower.hasCustomName() && lower.getDisplayName().getUnformattedText().contains("Croesus")) {             
                 	isCroesus = true;
                 }
             }
