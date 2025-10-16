@@ -600,6 +600,11 @@ public class CustomDropAnimationGui extends GuiScreen {
     
     public void renderImage(int slot, float currentX, float currentY, float size) {
         ResourceLocation image = carouselItems.get(slot).getImage();
+        
+        if (image == null) {
+        	System.out.println("Item " + carouselItems.get(slot).name().toString() + " have no image");
+        }
+        
     	int frameCount = carouselItems.get(slot).getFrameCount();
     	int frameHeight = 16;
     	float frameDurationMs = carouselItems.get(slot).getFrameTick() * 50;

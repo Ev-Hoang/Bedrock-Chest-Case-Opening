@@ -69,7 +69,6 @@ public class CitManager {
                     props.load(in);
 
                     checkID(props,path);
-                    checkEnchant(props, path);
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -82,9 +81,28 @@ public class CitManager {
     
     private void checkID(Properties props, String path) {
     	String nbtId = props.getProperty("nbt.ExtraAttributes.id");
+    	String itemType = props.getProperty("items", "");
+
+        if ("minecraft:enchanted_book".equals(itemType)) {
+        	System.out.println("BOOK");
+            for (String key : props.stringPropertyNames()) {
+                if (key.startsWith("nbt.ExtraAttributes.enchantments.")) {
+                    String enchantName = key.substring("nbt.ExtraAttributes.enchantments.".length());
+                    String level = props.getProperty(key);
+                    nbtId = enchantName + "_" + level;
+                    System.out.println(nbtId);
+                    break;
+                }
+            }
+        }
+        
         if (nbtId == null) return;
 
-        if (!ItemEnum.containsId(nbtId)) return;
+        try {
+            ItemEnum item = ItemEnum.valueOf(nbtId);
+        } catch (IllegalArgumentException ignored) {
+            return;
+        }
         
         String textureProp = props.getProperty("texture");
         String texturePath;
@@ -170,31 +188,6 @@ public class CitManager {
             }
         }
     }
-    
-    private void checkEnchant(Properties props, String path) {
-        for (String key : props.stringPropertyNames()) {
-            if (key.startsWith("nbt.ExtraAttributes.enchantments.")) {
-                String enchantName = key.substring("nbt.ExtraAttributes.enchantments.".length());
-                String expectedLevel = props.getProperty(key);
-                
-                if (EnchantEnum.contains(enchantName, expectedLevel)) {
-                	String texturePath = props.getProperty("texture");
-                    if (texturePath == null) {
-                        String baseName = path.substring(path.lastIndexOf('/') + 1, path.length() - ".properties".length());
-                        texturePath = baseName;
-                    }
-                    ResourceLocation rl = new ResourceLocation("minecraft", "mcpatcher/cit/" + texturePath + ".png");
-                	String nbtId = enchantName + "_" + expectedLevel;
-                	
-                	//Will update later on !!
-                	//citCache.put(nbtId, rl);
-                	System.out.println(nbtId + " : " + "mcpatcher/cit/" + texturePath + ".png");
-                    break;
-                }
-            }
-        }
-    }
-
 
     public static TextureData getTextureData(String nbtId) {
     	TextureData data = citCache.getOrDefault(nbtId,

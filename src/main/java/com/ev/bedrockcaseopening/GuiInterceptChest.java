@@ -62,31 +62,33 @@ public class GuiInterceptChest extends GuiContainer {
                 Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(NBTUtils.getExtraAttributeId(stack)));               
                 String itemId = NBTUtils.getExtraAttributeId(stack);
                 
-                if (stack == null) continue;
-                if (stack.getItem() == Items.enchanted_book && stack.hasTagCompound()) {
-                    NBTTagCompound tag = stack.getTagCompound();
-                    if (tag.hasKey("display", 10)) {
-                        NBTTagCompound display = tag.getCompoundTag("display");
-                        if (display.hasKey("Lore", 9)) {
-                            NBTTagList loreList = display.getTagList("Lore", 8);
-                            if (loreList.tagCount() > 0) {
-                                dropitem = loreList.getStringTagAt(0);
-                            }
-                        }
-                    }
-                } else {
-                    dropitem = stack.getDisplayName();
-                }
-
-                String normalized = normalizeItemName(dropitem);
-                System.out.print("slot" + i + " " + normalized);
+//                if (stack == null) continue;
+//                if (stack.getItem() == Items.enchanted_book && stack.hasTagCompound()) {
+//                    NBTTagCompound tag = stack.getTagCompound();
+//                    if (tag.hasKey("display", 10)) {
+//                        NBTTagCompound display = tag.getCompoundTag("display");
+//                        if (display.hasKey("Lore", 9)) {
+//                            NBTTagList loreList = display.getTagList("Lore", 8);
+//                            if (loreList.tagCount() > 0) {
+//                                dropitem = loreList.getStringTagAt(0);
+//                            }
+//                        }
+//                    }
+//                } else {
+//                    dropitem = stack.getDisplayName();
+//                }
+//
+//                String normalized = normalizeItemName(dropitem);
+//                System.out.print("slot" + i + " " + normalized);
                 
                 try {
-                	BedrockFloorVII item = BedrockFloorVII.valueOf(normalized);
+                	BedrockFloorVII item = BedrockFloorVII.valueOf(itemId);
+//                	BedrockFloorVII item = BedrockFloorVII.valueOf(normalized);
                     if (reward == null || item.getIndex() < reward.getIndex()) {
                         reward = item;
                     }
-                } catch (IllegalArgumentException ignored) {}
+                } catch (IllegalArgumentException ignored) {
+                }
             }
 
             rewardToOpen = reward;
@@ -98,6 +100,7 @@ public class GuiInterceptChest extends GuiContainer {
             Minecraft.getMinecraft().displayGuiScreen(new CustomDropAnimationGui(rewardToOpen));
         } else {
             Minecraft.getMinecraft().displayGuiScreen(ChestListener.originalGui);
+            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("NO ITEM BLEH BLEH BLUH!"));   
         }
     }
     
