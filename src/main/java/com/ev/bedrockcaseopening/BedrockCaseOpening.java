@@ -7,7 +7,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 @Mod(modid = "bedrockcaseopening",
 	name = "Bedrock Chest Opening",
-	version = "0.2",
+	version = "0.3",
 	guiFactory = "com.ev.bedrockcaseopening.ModGuiFactory"
 	)
 public class BedrockCaseOpening {

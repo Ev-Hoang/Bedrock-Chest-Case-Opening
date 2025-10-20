@@ -7,6 +7,7 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.texture.TextureMap;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
@@ -107,7 +108,7 @@ public class CustomDropAnimationGui extends GuiScreen {
     	// - the rest of the item is randomized.
     	// - create small random offset of stop point and slow point for the unpredictable.
     	
-    	System.out.println("Custom Animation UI Initialize");
+    	if(MyConfig.debugMode) System.out.println("Custom Animation UI Initialize");
     	mc = Minecraft.getMinecraft();
     	this.rewardItem = rewardItem;
     	rewardRandomizer(rewardItem);
@@ -139,7 +140,7 @@ public class CustomDropAnimationGui extends GuiScreen {
     	
     	//Print debug
     	for(int i = 0; i < rarityBuckets.size(); i++) {
-    		System.out.println(rarityBuckets.get(i).size());
+    		if(MyConfig.debugMode) System.out.println(rarityBuckets.get(i).size());
     	}
     	
     	//rollsize is basically a weight calculation for all the items that rolled. (weight / rollsize)
@@ -208,7 +209,7 @@ public class CustomDropAnimationGui extends GuiScreen {
 				double randomSlot = (Math.exp(0.04605 * x) * (-1) + 100)/100 * carouselItems.size() - 1;
 				int itemInRarityBucket = ThreadLocalRandom.current().nextInt(rarityBuckets.get(i).size());
 				carouselItems.add((int)randomSlot, rarityBuckets.get(i).get(itemInRarityBucket));
-				System.out.println("RNG DROP rarity " + i + " at slot " + randomSlot + " x " + x);
+				if(MyConfig.debugMode) System.out.println("RNG DROP rarity " + i + " at slot " + randomSlot + " x " + x);
 				
 			} else { //Rare case (fill in item slots + not repititive
 				for(int j = 0; j < ammount.get(i); j++) {
@@ -329,9 +330,9 @@ public class CustomDropAnimationGui extends GuiScreen {
         }
         
         // DEBUG Print
-        System.out.println("[DEBUG] Resolution changed → New scaleFactor=" + scaleFactor +
+        if(MyConfig.debugMode) System.out.println("[DEBUG] Resolution changed → New scaleFactor=" + scaleFactor +
             ", width=" + screenWidth + ", height=" + screenHeight);
-        System.out.println("[DEBUG] Resolution changed → MC.window" + mc.displayWidth +
+        if(MyConfig.debugMode) System.out.println("[DEBUG] Resolution changed → MC.window" + mc.displayWidth +
                 " x " + mc.displayHeight);
     }
 
@@ -601,10 +602,6 @@ public class CustomDropAnimationGui extends GuiScreen {
     public void renderImage(int slot, float currentX, float currentY, float size) {
         ResourceLocation image = carouselItems.get(slot).getImage();
         
-        if (image == null) {
-        	System.out.println("Item " + carouselItems.get(slot).name().toString() + " have no image");
-        }
-        
     	int frameCount = carouselItems.get(slot).getFrameCount();
     	int frameHeight = 16;
     	float frameDurationMs = carouselItems.get(slot).getFrameTick() * 50;
@@ -613,14 +610,21 @@ public class CustomDropAnimationGui extends GuiScreen {
     	int frameIndex = (int)((long)(time / frameDurationMs) % frameCount);
     	float v = frameIndex * frameHeight;
 
-        if (image != null) {
+        if (image != null) {        	
+        	int imageWidth = 16, imageHeight = 16;
         	float imageSize = 0.8f * itemBoxHeight * size;
         	float imageX = currentX + (itemBoxWidth * size)/2 - imageSize/2;
         	float imageY = currentY + (itemBoxHeight * size)/2 - imageSize/2;
         	
-        	mc.getTextureManager().bindTexture(image);
+        	try {
+        	    mc.getTextureManager().bindTexture(image);
+        	} catch (Exception e) {
+        		if(MyConfig.debugMode) System.out.println(e);
+        	    mc.getTextureManager().bindTexture(TextureMap.LOCATION_MISSING_TEXTURE);
+        	}
+        	
         	GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
-        	drawScaledCustomSizeModalRect((int)imageX, (int)imageY, 0, v, 16, 16, (int)imageSize, (int)imageSize, 16f, frameHeight * frameCount);
+        	drawScaledCustomSizeModalRect((int)imageX, (int)imageY, 0, v, imageWidth, imageHeight, (int)imageSize, (int)imageSize, 16f, frameHeight * frameCount);
         }
     }
     

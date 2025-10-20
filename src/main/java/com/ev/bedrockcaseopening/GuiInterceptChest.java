@@ -18,22 +18,22 @@ public class GuiInterceptChest extends GuiContainer {
 	
     private final ContainerChest container;
     
-    public static String normalizeItemName(String displayName) {
-        String normalized = displayName
-            .replaceAll("(\\§[0-9a-frk-or])+", "")
-            .replaceAll("[^a-zA-Z0-9\\s]", "")
-            .trim()
-            .replaceAll("\\s+", "_")        
-            .toUpperCase();                 
-        
-        return normalized.length() > 0 ? normalized.substring(0) : "";
-    }
+//    public static String normalizeItemName(String displayName) {
+//        String normalized = displayName
+//            .replaceAll("(\\§[0-9a-frk-or])+", "")
+//            .replaceAll("[^a-zA-Z0-9\\s]", "")
+//            .trim()
+//            .replaceAll("\\s+", "_")        
+//            .toUpperCase();                 
+//        
+//        return normalized.length() > 0 ? normalized.substring(0) : "";
+//    }
     
     public GuiInterceptChest(ContainerChest container) {
     	super(container);
         this.container = container;
         
-        System.out.println("[GuiInterceptChest] Initialized");
+        if(MyConfig.debugMode) System.out.println("[GuiInterceptChest] Initialized");
     }
 
     @Override
@@ -54,36 +54,14 @@ public class GuiInterceptChest extends GuiContainer {
 
             IInventory lower = container.getLowerChestInventory();
             BedrockFloorVII reward = null;
-            String dropitem = null;
 
             for (int i = 10; i <= 16; i++) {
                 ItemStack stack = lower.getStackInSlot(i);
                 
-                Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(NBTUtils.getExtraAttributeId(stack)));               
-                String itemId = NBTUtils.getExtraAttributeId(stack);
-                
-//                if (stack == null) continue;
-//                if (stack.getItem() == Items.enchanted_book && stack.hasTagCompound()) {
-//                    NBTTagCompound tag = stack.getTagCompound();
-//                    if (tag.hasKey("display", 10)) {
-//                        NBTTagCompound display = tag.getCompoundTag("display");
-//                        if (display.hasKey("Lore", 9)) {
-//                            NBTTagList loreList = display.getTagList("Lore", 8);
-//                            if (loreList.tagCount() > 0) {
-//                                dropitem = loreList.getStringTagAt(0);
-//                            }
-//                        }
-//                    }
-//                } else {
-//                    dropitem = stack.getDisplayName();
-//                }
-//
-//                String normalized = normalizeItemName(dropitem);
-//                System.out.print("slot" + i + " " + normalized);
-                
+                if(MyConfig.debugMode) Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(NBTUtils.getExtraAttributeId(stack)));               
+                String itemId = NBTUtils.getExtraAttributeId(stack);                
                 try {
                 	BedrockFloorVII item = BedrockFloorVII.valueOf(itemId);
-//                	BedrockFloorVII item = BedrockFloorVII.valueOf(normalized);
                     if (reward == null || item.getIndex() < reward.getIndex()) {
                         reward = item;
                     }
@@ -100,7 +78,7 @@ public class GuiInterceptChest extends GuiContainer {
             Minecraft.getMinecraft().displayGuiScreen(new CustomDropAnimationGui(rewardToOpen));
         } else {
             Minecraft.getMinecraft().displayGuiScreen(ChestListener.originalGui);
-            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("NO ITEM BLEH BLEH BLUH!"));   
+            if(MyConfig.debugMode) Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("NO ITEM BLEH BLEH BLUH!"));   
         }
     }
     

@@ -53,9 +53,9 @@ public class ChestListener {
                 		hasPlayedAnimation = true;
                 	}
                 	
-            		System.out.println("bedrock chest");
+                	if(MyConfig.debugMode) System.out.println("bedrock chest");
                     event.gui = new GuiInterceptChest(container);
-                    System.out.println("gui intercept called");
+                    if(MyConfig.debugMode) System.out.println("gui intercept called");
                 }
                 
                 if (lower.hasCustomName() && lower.getDisplayName().getUnformattedText().contains("Obsidian Chest")) {    
@@ -68,9 +68,9 @@ public class ChestListener {
                 		hasPlayedAnimation = true;
                 	}
                 	
-            		System.out.println("bedrock chest");
+                	if(MyConfig.debugMode) System.out.println("bedrock chest");
                     event.gui = new GuiInterceptChest(container);
-                    System.out.println("gui intercept called");
+                    if(MyConfig.debugMode) System.out.println("gui intercept called");
                 }
                 
                 if (lower.hasCustomName() && lower.getDisplayName().getUnformattedText().contains("Catacombs")) {               

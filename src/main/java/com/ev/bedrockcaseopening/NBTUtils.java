@@ -12,13 +12,13 @@ public class NBTUtils {
 
     public static void printAllNBT(ItemStack stack) {
         if (stack == null) {
-        	Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("STACK NULL"));
+        	if(MyConfig.debugMode) Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("STACK NULL"));
             return;
         }
 
         NBTTagCompound tag = stack.getTagCompound();
         if (tag == null) {
-        	Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("NO NBT"));
+        	if(MyConfig.debugMode) Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("NO NBT"));
             return;
         }
 
@@ -34,13 +34,12 @@ public class NBTUtils {
             if (key == "textures") break;
             byte type = base.getId();
 
-            // Nếu là Compound → đệ quy
             if (type == 10) { // 10 = NBTTagCompound
-            	Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(pad + key + ": {"));
+            	if(MyConfig.debugMode) Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(pad + key + ": {"));
                 printCompound((NBTTagCompound) base, indent + 1);
-                Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(pad + "}"));
+                if(MyConfig.debugMode) Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(pad + "}"));
             } else {
-            	Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(pad + key + " = " + base.toString()));
+            	if(MyConfig.debugMode) Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(pad + key + " = " + base.toString()));
             }
         }
     }

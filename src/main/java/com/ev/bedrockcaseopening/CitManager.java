@@ -84,13 +84,11 @@ public class CitManager {
     	String itemType = props.getProperty("items", "");
 
         if ("minecraft:enchanted_book".equals(itemType)) {
-        	System.out.println("BOOK");
             for (String key : props.stringPropertyNames()) {
                 if (key.startsWith("nbt.ExtraAttributes.enchantments.")) {
                     String enchantName = key.substring("nbt.ExtraAttributes.enchantments.".length());
                     String level = props.getProperty(key);
                     nbtId = enchantName + "_" + level;
-                    System.out.println(nbtId);
                     break;
                 }
             }
@@ -139,7 +137,7 @@ public class CitManager {
 
         citCache.put(nbtId, new TextureData(rl, frameTime , frames));
         
-        //System.out.println(nbtId + " : " + texturePath + ".png");
+        if(MyConfig.debugMode) System.out.println(nbtId + " : " + texturePath + ".png");
     }
     
     private int getFrameTime(IResourceManager rm, ResourceLocation rl) {
@@ -191,7 +189,7 @@ public class CitManager {
 
     public static TextureData getTextureData(String nbtId) {
     	TextureData data = citCache.getOrDefault(nbtId,
-    			new TextureData(new ResourceLocation("minecraft", "textures/item/diamond_sword.png"),1,1));  	
+    			new TextureData(ItemEnum.valueOf(nbtId).getDefaultRl(),1,1));  	
     	return data;
     }
 
