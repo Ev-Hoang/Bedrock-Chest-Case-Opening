@@ -38,16 +38,17 @@ public class ChestListener {
             originalGui = (GuiChest) event.gui;
 
             if (originalGui.inventorySlots instanceof ContainerChest) {    
-            	isCatacombsChest = false;
             	
                 ContainerChest container = (ContainerChest) originalGui.inventorySlots;
                 IInventory lower = container.getLowerChestInventory();
 
                 if (lower.hasCustomName() && lower.getDisplayName().getUnformattedText().contains("Bedrock Chest")) {    
-                		
+                	if(MyConfig.debugMode) Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("Bedrock"));  
+                	
                 	if(isCroesus) {
                 		if (openedChest.containsKey(chestID)) return;
                 		openedChest.put(chestID, true);
+                		if(MyConfig.debugMode) Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(chestID + " Opening"));  
                 	} else {
                 		if (hasPlayedAnimation) return;
                 		hasPlayedAnimation = true;
@@ -57,30 +58,34 @@ public class ChestListener {
                     event.gui = new GuiInterceptChest(container);
                     if(MyConfig.debugMode) System.out.println("gui intercept called");
                 }
+//                
+//                if (lower.hasCustomName() && lower.getDisplayName().getUnformattedText().contains("Obsidian Chest")) {    
+//            		
+//                	if(isCroesus) {
+//                		if (openedChest.containsKey(chestID)) return;
+//                		openedChest.put(chestID, true);
+//                	} else {
+//                		if (hasPlayedAnimation) return;
+//                		hasPlayedAnimation = true;
+//                	}
+//                	
+//                	if(MyConfig.debugMode) System.out.println("obsidian chest");
+//                    event.gui = new GuiInterceptChest(container);
+//                    if(MyConfig.debugMode) System.out.println("gui intercept called");
+//                }
                 
-                if (lower.hasCustomName() && lower.getDisplayName().getUnformattedText().contains("Obsidian Chest")) {    
-            		
-                	if(isCroesus) {
-                		if (openedChest.containsKey(chestID)) return;
-                		openedChest.put(chestID, true);
-                	} else {
-                		if (hasPlayedAnimation) return;
-                		hasPlayedAnimation = true;
-                	}
-                	
-                	if(MyConfig.debugMode) System.out.println("bedrock chest");
-                    event.gui = new GuiInterceptChest(container);
-                    if(MyConfig.debugMode) System.out.println("gui intercept called");
-                }
-                
-                if (lower.hasCustomName() && lower.getDisplayName().getUnformattedText().contains("Catacombs")) {               
+                if (lower.hasCustomName() && lower.getDisplayName().getUnformattedText().contains("Catacombs")) {   
+                	if(MyConfig.debugMode) Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("Catacombs"));  
                 	if(!isCroesus) return;
                 	if(openedChest.containsKey(chestID)) return;
+                	if(MyConfig.debugMode) Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(chestID + " Havent open yet"));  
                 	isCatacombsChest = true;                	
                 }
                 
-                if (lower.hasCustomName() && lower.getDisplayName().getUnformattedText().contains("Croesus")) {             
+                if (lower.hasCustomName() && lower.getDisplayName().getUnformattedText().contains("Croesus")) {
+                	if(MyConfig.debugMode) Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("Croesus"));   
                 	isCroesus = true;
+                	isCatacombsChest = false;
                 }
             }
         }
@@ -116,7 +121,7 @@ public class ChestListener {
             Slot slot = chest.getSlotUnderMouse();
             if (slot != null && org.lwjgl.input.Mouse.getEventButtonState()) {
                 
-                if(isCroesus) chestID = slot.slotNumber;
+                if(isCroesus && !isCatacombsChest) chestID = slot.slotNumber;
             }
         }
     }

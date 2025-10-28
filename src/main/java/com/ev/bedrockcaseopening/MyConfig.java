@@ -10,6 +10,8 @@ public class MyConfig {
     public static float slowTime;
     public static int slowDistance;
     public static boolean debugMode;
+    public static float textScale;
+    public static boolean allowText;
 
     public static void init(File configFile) {
         config = new Configuration(configFile);
@@ -22,6 +24,10 @@ public class MyConfig {
                 "Time during the wind down phase");
         slowDistance = config.getInt("slowDistance", category, 20, 10, 40,
                 "The number of caroucel of the wind down phase");
+        textScale = config.getFloat("textScale", category, 2f, 1f, 5f,
+                "Text size in the carousel");
+        allowText = config.getBoolean("allowText", category, true,
+        		"For people who don't like the enchating book tier-list meme");
         debugMode = config.getBoolean("debugMode", category, false,
         		"Use for dev to debug");
 

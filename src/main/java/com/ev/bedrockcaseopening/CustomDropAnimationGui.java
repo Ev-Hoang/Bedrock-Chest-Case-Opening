@@ -43,6 +43,7 @@ public class CustomDropAnimationGui extends GuiScreen {
     //===================== RESOURCES ===================
     private ResourceLocation alphaFadeSidePNG = new ResourceLocation("bedrockcaseopening", "textures/gui/fade_side.png");
     private ResourceLocation audio = new ResourceLocation("gui.button.press");
+    private FloatFontRenderer floatFont;
     
     Framebuffer frameBufferLayer1, frameBufferLayer2;
     Framebuffer guiBuffer;
@@ -110,6 +111,7 @@ public class CustomDropAnimationGui extends GuiScreen {
     	
     	if(MyConfig.debugMode) System.out.println("Custom Animation UI Initialize");
     	mc = Minecraft.getMinecraft();
+    	floatFont = new FloatFontRenderer(mc.fontRendererObj);
     	this.rewardItem = rewardItem;
     	rewardRandomizer(rewardItem);
     	
@@ -473,7 +475,7 @@ public class CustomDropAnimationGui extends GuiScreen {
         GL11.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
         GL11.glStencilMask(0x00);
         
-    	float scale = progress; // Scale từ 0.8 → 1.0      
+    	float scale = progress;
     	
         drawCarousel(centerX, centerY, scale * 0.8f);
         
@@ -565,6 +567,9 @@ public class CustomDropAnimationGui extends GuiScreen {
             float y1 = y + ((float)(itemBoxHeight * size * 15)/16);
             float y2 = y + itemBoxHeight * size;
             
+            float textX = x + itemBoxWidth  * 1/2;
+            float textY = y + itemBoxHeight * 3/4;
+            
             GlStateManager.color(1f, 1f, 1f, 1f);
             drawRect((int) x, (int) y, (int) (x + itemBoxWidth * size), (int) (y + itemBoxHeight * size), 0x3F888888);
             
@@ -577,8 +582,31 @@ public class CustomDropAnimationGui extends GuiScreen {
             drawGradientRect((int)x, (int) (y2 -  itemBoxHeight * size) , (int)(x + itemBoxWidth * size), (int)y2, (boxColor & 0x00FFFFFF) | 0x00 << 24, (boxColor & 0x00FFFFFF) | 0xCC << 24);
             GlStateManager.disableBlend();
             
-            renderImage(i, x, y, size);   
+            renderImage(i, x, y, size);  
+            
+            if(MyConfig.allowText) {
+                GL11.glPushMatrix();
+    	        GL11.glScalef(MyConfig.textScale, MyConfig.textScale, 1f);
+    	        floatFont.drawCenteredString(normalizeString(carouselItems.get(i).name()), textX / MyConfig.textScale, textY / MyConfig.textScale, boxColor, true);
+    			GL11.glPopMatrix();
+            }
         }
+    }
+    
+    public String normalizeString(String input) {
+        if (input == null || input.isEmpty()) return "";
+
+        String[] parts = input.split("_");
+        StringBuilder result = new StringBuilder();
+
+        for (String part : parts) {
+            if (part.isEmpty()) continue;
+
+            String word = part.substring(0, 1).toUpperCase() + part.substring(1).toLowerCase();
+            result.append(word).append(" ");
+        }
+
+        return result.toString().trim();
     }
     
     public void renderJudgementLine() {
@@ -592,9 +620,7 @@ public class CustomDropAnimationGui extends GuiScreen {
         
         int boxDistance = (int)offsetX % (int)spacing;
         if(boxDistance < lastBoxDistance) {
-        	System.out.print("hi");
         	mc.getSoundHandler().playSound(PositionedSoundRecord.create(audio, 1.0F));
-        	//first try btw
         }
         lastBoxDistance = boxDistance;
     }
