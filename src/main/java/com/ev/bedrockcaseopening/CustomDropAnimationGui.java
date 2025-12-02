@@ -12,6 +12,9 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
+import com.ev.bedrockcaseopening.DungeonDropData.CaseMaterial;
+import com.ev.bedrockcaseopening.DungeonDropData.Floor;
+
 import io.netty.util.internal.ThreadLocalRandom;
 
 import java.awt.Color;
@@ -54,11 +57,15 @@ public class CustomDropAnimationGui extends GuiScreen {
     private long guiOpenStartTime = -1;
     
     //===================== CAROUSEL LOGICS =============   
-    private final List<BedrockFloorVII> carouselItems = new ArrayList<>();
+    private final List<DungeonDropData.Rule> carouselItems = new ArrayList<>();
     //List of item in the carousel, if everything corrects, the default will always be 50 for every animation.
 
-    private BedrockFloorVII rewardItem;
-    //The highest tiered item, currently in the BedrockChest.
+    private DungeonDropData.Rule rewardItem;
+    //The highest tiered item, currently in the Chest.
+    
+    private Floor floor;
+    private CaseMaterial material;
+    //floor and case type
     
     private final int itemCount = 50;
     //Amount of item in the carousel. DO NOT CHANGE
@@ -103,7 +110,7 @@ public class CustomDropAnimationGui extends GuiScreen {
 //===================================================
 //	   				FUNCTIONS
 //===================================================    
-    public CustomDropAnimationGui(BedrockFloorVII rewardItem) {
+    public CustomDropAnimationGui(DungeonDropData.Rule rewardItem, Floor floor, CaseMaterial material) {
     	//First initialize of the CustomAnimationGUI class
     	// - get the reward item into the 44th slot.
     	// - the rest of the item is randomized.
@@ -113,6 +120,8 @@ public class CustomDropAnimationGui extends GuiScreen {
     	mc = Minecraft.getMinecraft();
     	floatFont = new FloatFontRenderer(mc.fontRendererObj);
     	this.rewardItem = rewardItem;
+    	this.floor = floor;
+    	this.material = material;
     	rewardRandomizer(rewardItem);
     	
     	mc.getSoundHandler().playSound(PositionedSoundRecord.create(audio, 1.0F));
@@ -125,20 +134,22 @@ public class CustomDropAnimationGui extends GuiScreen {
     }
 
     
-    private void rewardRandomizer(BedrockFloorVII rewardItem) {
+    private void rewardRandomizer(DungeonDropData.Rule rewardItem) {
     	//Used to randomize all the other item slots except for the reward slots
     	// - Used base weight so that ultra rare item dont show up frequently.
     	// Note : I used my own algorithm to calculate position of rare items, its hard to explain, you can use AI to explain the code if u want to understand.
     	
     	//Create buckets of rarity item, to keep track of items while randomized, so that it doenst duplicate once it already rolled.
-    	List<List<BedrockFloorVII>> rarityBuckets = new ArrayList<>();
-    	for (int i = 0; i < 7; i++) {
-    	    rarityBuckets.add(new ArrayList<>());
-    	}
-    	for (BedrockFloorVII item : BedrockFloorVII.values()) {
-    	    int rarity = item.getRarityIndex();
-    	    rarityBuckets.get(rarity - 1).add(item);
-    	} 
+        List<List<DungeonDropData.Rule>> rarityBuckets = new ArrayList<>();
+        for (int i = 0; i < 7; i++) {
+            rarityBuckets.add(new ArrayList<>());
+        }
+    	
+        List<DungeonDropData.Rule> allDrops = DungeonDropData.getDrops(material, floor);
+        for (DungeonDropData.Rule rule : allDrops) {
+            int rarityIndex = rule.rarity - 1; // 1 → 0
+            rarityBuckets.get(rarityIndex).add(rule);
+        }
     	
     	//Print debug
     	for(int i = 0; i < rarityBuckets.size(); i++) {
@@ -165,8 +176,8 @@ public class CustomDropAnimationGui extends GuiScreen {
     	checkRepeat.add(false);
     	
     	//Check if reward item is in the checkRepeat list.
-    	if(rewardItem.getRarityIndex() <= 3) {
-    		checkRepeat.set(rewardItem.getRarityIndex() - 1, true);       	
+    	if(rewardItem.rarity <= 3) {
+    		checkRepeat.set(rewardItem.rarity - 1, true);       	
     	}
     	
     	//Rolling algorithm.
@@ -198,30 +209,30 @@ public class CustomDropAnimationGui extends GuiScreen {
     	
     	
     	// Fill the item into the carousel, using the amount list that has rolled, and extra algotihm to prefix rater item to get close to the reward item slot (extra copium added).
-		for(int i = 6 ; i >=0; i--) {
-			if (i == 6) { //Common case (repititive + fill the item slots)
-				for(int j = 0; j < rolls; j++) { 
-					BedrockFloorVII randomItem = rarityBuckets.get(i).get(
-	    	            ThreadLocalRandom.current().nextInt(rarityBuckets.get(i).size())
-	    	        );
-	    	        carouselItems.add(randomItem);
-				}
-			} else if (i < 3 && ammount.get(i)>0) { //RNG case (only 1 per case)
-				int x = ThreadLocalRandom.current().nextInt(0,90);
-				double randomSlot = (Math.exp(0.04605 * x) * (-1) + 100)/100 * carouselItems.size() - 1;
-				int itemInRarityBucket = ThreadLocalRandom.current().nextInt(rarityBuckets.get(i).size());
-				carouselItems.add((int)randomSlot, rarityBuckets.get(i).get(itemInRarityBucket));
-				if(MyConfig.debugMode) System.out.println("RNG DROP rarity " + i + " at slot " + randomSlot + " x " + x);
-				
-			} else { //Rare case (fill in item slots + not repititive
-				for(int j = 0; j < ammount.get(i); j++) {
-					int randomSlot = ThreadLocalRandom.current().nextInt(carouselItems.size()-1);
-					int itemInRarityBucket = ThreadLocalRandom.current().nextInt(rarityBuckets.get(i).size());
-					carouselItems.add(randomSlot, rarityBuckets.get(i).get(itemInRarityBucket));
-					rarityBuckets.get(i).remove(itemInRarityBucket);
-				}
-			}		
-		}
+        for (int i = 6; i >= 0; i--) {
+            if (i == 6) { // Common case
+                for (int j = 0; j < rolls; j++) {
+                    DungeonDropData.Rule randomRule = rarityBuckets.get(i)
+                            .get(ThreadLocalRandom.current().nextInt(rarityBuckets.get(i).size()));
+                    carouselItems.add(randomRule);
+                }
+            } else if (i < 3 && ammount.get(i) > 0) { // RNG case
+                int x = ThreadLocalRandom.current().nextInt(0, 90);
+                double randomSlot = (Math.exp(0.04605 * x) * (-1) + 100) / 100 * carouselItems.size() - 1;
+                DungeonDropData.Rule randomRule = rarityBuckets.get(i)
+                        .get(ThreadLocalRandom.current().nextInt(rarityBuckets.get(i).size()));
+                carouselItems.add((int) randomSlot, randomRule);
+                if (MyConfig.debugMode) System.out.println("RNG DROP rarity " + i + " at slot " + randomSlot + " x " + x);
+            } else { // Rare case
+                for (int j = 0; j < ammount.get(i); j++) {
+                    int randomSlot = ThreadLocalRandom.current().nextInt(carouselItems.size() - 1);
+                    int itemIndex = ThreadLocalRandom.current().nextInt(rarityBuckets.get(i).size());
+                    DungeonDropData.Rule rule = rarityBuckets.get(i).get(itemIndex);
+                    carouselItems.add(randomSlot, rule);
+                    rarityBuckets.get(i).remove(itemIndex);
+                }
+            }
+        }
 		carouselItems.add(rewardSlot, rewardItem);
     }
    
@@ -401,7 +412,7 @@ public class CustomDropAnimationGui extends GuiScreen {
         //If the results are up, play the reward sound, then switch GUI.
     	if (hasShownResult) {
     	    String sound;
-    	    switch (rewardItem.getRarity().getIndex()) {
+    	    switch (rewardItem.rarity) {
     	        case 7: sound = "dig.grass"; break;
     	        case 6: sound = "liquid.splash"; break;
     	        case 5: sound = "random.orb"; break;
@@ -415,7 +426,7 @@ public class CustomDropAnimationGui extends GuiScreen {
     	        PositionedSoundRecord.create(new ResourceLocation("minecraft", sound), 1.0F)
     	    );
     	    
-    	    if (rewardItem.getRarity().getIndex() == 1) {
+    	    if (rewardItem.rarity == 1) {
     	    	Minecraft.getMinecraft().getSoundHandler().playSound(
 	        	        PositionedSoundRecord.create(new ResourceLocation("minecraft", "fireworks.launch"), 1.0F)
 	        	    );
@@ -560,8 +571,8 @@ public class CustomDropAnimationGui extends GuiScreen {
                 continue;
             }
             
-            DropRarity rarity = carouselItems.get(i).getRarity();
-            if (rarity == null) continue;
+            DropRarity rarity = DropRarity.fromIndex(carouselItems.get(i).rarity);
+            if (rarity == null) continue;  
             int boxColor = getBoxColor(rarity);
             
             float y1 = y + ((float)(itemBoxHeight * size * 15)/16);
@@ -587,7 +598,7 @@ public class CustomDropAnimationGui extends GuiScreen {
             if(MyConfig.allowText) {
                 GL11.glPushMatrix();
     	        GL11.glScalef(MyConfig.textScale, MyConfig.textScale, 1f);
-    	        floatFont.drawCenteredString(normalizeString(carouselItems.get(i).name()), textX / MyConfig.textScale, textY / MyConfig.textScale, boxColor, true);
+    	        floatFont.drawCenteredString(normalizeString(carouselItems.get(i).item.name()), textX / MyConfig.textScale, textY / MyConfig.textScale, boxColor, true);
     			GL11.glPopMatrix();
             }
         }
@@ -626,11 +637,10 @@ public class CustomDropAnimationGui extends GuiScreen {
     }
     
     public void renderImage(int slot, float currentX, float currentY, float size) {
-        ResourceLocation image = carouselItems.get(slot).getImage();
-        
-    	int frameCount = carouselItems.get(slot).getFrameCount();
+        ResourceLocation image = CitManager.getTextureData(carouselItems.get(slot).item.name()).getRl();        
+    	int frameCount = CitManager.getTextureData(carouselItems.get(slot).item.name()).getFrames();;
     	int frameHeight = 16;
-    	float frameDurationMs = carouselItems.get(slot).getFrameTick() * 50;
+    	float frameDurationMs = CitManager.getTextureData(carouselItems.get(slot).item.name()).getFrametime() * 50;
 
     	long time = System.currentTimeMillis() % 10000;
     	int frameIndex = (int)((long)(time / frameDurationMs) % frameCount);

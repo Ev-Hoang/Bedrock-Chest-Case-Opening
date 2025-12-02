@@ -9,6 +9,9 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.ev.bedrockcaseopening.DungeonDropData.CaseMaterial;
+import com.ev.bedrockcaseopening.DungeonDropData.Floor;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.inventory.GuiChest;
@@ -55,7 +58,7 @@ public class ChestListener {
                 	}
                 	
                 	if(MyConfig.debugMode) System.out.println("bedrock chest");
-                    event.gui = new GuiInterceptChest(container);
+                    event.gui = new GuiInterceptChest(container, Floor.VII, CaseMaterial.BEDROCK);
                     if(MyConfig.debugMode) System.out.println("gui intercept called");
                 }
 //                

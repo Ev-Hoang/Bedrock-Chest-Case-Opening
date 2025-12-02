@@ -1,37 +1,31 @@
 package com.ev.bedrockcaseopening;
 
+import com.ev.bedrockcaseopening.DungeonDropData.CaseMaterial;
+import com.ev.bedrockcaseopening.DungeonDropData.Floor;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.init.Items;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ChatComponentText;
 
 public class GuiInterceptChest extends GuiContainer {
 
 	private int delayTicks = 2;
-	private BedrockFloorVII rewardToOpen = null;
+	private DungeonDropData.Rule rewardToOpen = null;
 	private boolean doneCollectingReward = false;
 	
     private final ContainerChest container;
+    private final Floor floor;
+    private final CaseMaterial material;
     
-//    public static String normalizeItemName(String displayName) {
-//        String normalized = displayName
-//            .replaceAll("(\\§[0-9a-frk-or])+", "")
-//            .replaceAll("[^a-zA-Z0-9\\s]", "")
-//            .trim()
-//            .replaceAll("\\s+", "_")        
-//            .toUpperCase();                 
-//        
-//        return normalized.length() > 0 ? normalized.substring(0) : "";
-//    }
-    
-    public GuiInterceptChest(ContainerChest container) {
+    public GuiInterceptChest(ContainerChest container, Floor floor, CaseMaterial material) {
     	super(container);
         this.container = container;
+        this.floor = floor;
+        this.material = material;
+        
         
         if(MyConfig.debugMode) System.out.println("[GuiInterceptChest] Initialized");
     }
@@ -57,25 +51,28 @@ public class GuiInterceptChest extends GuiContainer {
 
             for (int i = 10; i <= 16; i++) {
                 ItemStack stack = lower.getStackInSlot(i);
-                
-                if(MyConfig.debugMode) Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(NBTUtils.getExtraAttributeId(stack)));               
-                String itemId = NBTUtils.getExtraAttributeId(stack);                
-                try {
-                	BedrockFloorVII item = BedrockFloorVII.valueOf(itemId);
-                    if (reward == null || item.getIndex() < reward.getIndex()) {
-                        reward = item;
-                    }
-                } catch (IllegalArgumentException ignored) {
+                String itemId = NBTUtils.getExtraAttributeId(stack);
+
+                DungeonDropData.Rule foundRule = DungeonDropData.getDrops(material, floor).stream()
+                        .filter(r -> r.item.name().equals(itemId))
+                        .findFirst()
+                        .orElse(null);
+
+                if (foundRule == null) continue;
+
+                if (rewardToOpen == null || 
+                    foundRule.rarity < rewardToOpen.rarity || 
+                    (foundRule.rarity == rewardToOpen.rarity &&
+                     foundRule.item.name().compareTo(rewardToOpen.item.name()) < 0)) {
+                    rewardToOpen = foundRule;
                 }
             }
-
-            rewardToOpen = reward;
         }
 
         if (delayTicks > 0) {
             delayTicks--;
         } else if (rewardToOpen != null) {
-            Minecraft.getMinecraft().displayGuiScreen(new CustomDropAnimationGui(rewardToOpen));
+        	Minecraft.getMinecraft().displayGuiScreen(new CustomDropAnimationGui(rewardToOpen, floor, material));
         } else {
             Minecraft.getMinecraft().displayGuiScreen(ChestListener.originalGui);
             if(MyConfig.debugMode) Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("NO ITEM BLEH BLEH BLUH!"));   
