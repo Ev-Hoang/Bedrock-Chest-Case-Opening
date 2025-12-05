@@ -3,8 +3,8 @@
 
 
 ## Download link:
-- Github : [V0.3](https://github.com/Ev-Hoang/Bedrock-Chest-Case-Opening/releases/tag/BetaV0.3)
-- ModRinth : [V0.2](https://modrinth.com/mod/bcco)
+- Github : [V0.4](https://github.com/Ev-Hoang/Bedrock-Chest-Case-Opening/releases/tag/BetaV0.3)
+- ModRinth : [V0.4](https://modrinth.com/mod/bcco/version/V0.4)
 - This version is for 1.8.9 Minecraft only. 1.21 version is on SkyOcean (Modrinth) (tell them to credit me in repo pls :'D ).
 
 ## About the source code:
