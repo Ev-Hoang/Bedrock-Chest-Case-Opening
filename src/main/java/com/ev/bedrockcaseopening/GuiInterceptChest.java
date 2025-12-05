@@ -47,11 +47,16 @@ public class GuiInterceptChest extends GuiContainer {
             doneCollectingReward = true;
 
             IInventory lower = container.getLowerChestInventory();
-            BedrockFloorVII reward = null;
+            
+            System.out.println("material = " + material);
+            System.out.println("floor = " + floor);
+            System.out.println("Drops size = " + DungeonDropData.getDrops(material, floor).size());
 
             for (int i = 10; i <= 16; i++) {
                 ItemStack stack = lower.getStackInSlot(i);
                 String itemId = NBTUtils.getExtraAttributeId(stack);
+                
+                System.out.println("[GuiInterceptChest] " + itemId);
 
                 DungeonDropData.Rule foundRule = DungeonDropData.getDrops(material, floor).stream()
                         .filter(r -> r.item.name().equals(itemId))
@@ -59,6 +64,8 @@ public class GuiInterceptChest extends GuiContainer {
                         .orElse(null);
 
                 if (foundRule == null) continue;
+                
+                System.out.println("[GuiInterceptChest] Founded!");
 
                 if (rewardToOpen == null || 
                     foundRule.rarity < rewardToOpen.rarity || 

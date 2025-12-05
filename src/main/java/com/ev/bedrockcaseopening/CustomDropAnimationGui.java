@@ -137,9 +137,10 @@ public class CustomDropAnimationGui extends GuiScreen {
     private void rewardRandomizer(DungeonDropData.Rule rewardItem) {
     	//Used to randomize all the other item slots except for the reward slots
     	// - Used base weight so that ultra rare item dont show up frequently.
-    	// Note : I used my own algorithm to calculate position of rare items, its hard to explain, you can use AI to explain the code if u want to understand.
+    	// Note : I used my own algorithm to calculate position of rare items, its hard to explain, you can use chatGPT to explain the code if u want to understand.
     	
     	//Create buckets of rarity item, to keep track of items while randomized, so that it doenst duplicate once it already rolled.
+    	
         List<List<DungeonDropData.Rule>> rarityBuckets = new ArrayList<>();
         for (int i = 0; i < 7; i++) {
             rarityBuckets.add(new ArrayList<>());
@@ -147,7 +148,7 @@ public class CustomDropAnimationGui extends GuiScreen {
     	
         List<DungeonDropData.Rule> allDrops = DungeonDropData.getDrops(material, floor);
         for (DungeonDropData.Rule rule : allDrops) {
-            int rarityIndex = rule.rarity - 1; // 1 → 0
+            int rarityIndex = rule.rarity - 1; 
             rarityBuckets.get(rarityIndex).add(rule);
         }
     	
@@ -156,7 +157,7 @@ public class CustomDropAnimationGui extends GuiScreen {
     		if(MyConfig.debugMode) System.out.println(rarityBuckets.get(i).size());
     	}
     	
-    	//rollsize is basically a weight calculation for all the items that rolled. (weight / rollsize)
+    	// rollsize is basically a weight calculation for all the items that rolled. (weight / rollsize)
     	// Ex: Rarity 0 have weight = 2, roll priority 0 (highest). So that the chance that drop is 2/1000.
     	//
     	//Amount to keep track of the amount of item that has rolled.
@@ -186,6 +187,11 @@ public class CustomDropAnimationGui extends GuiScreen {
     	// - Each rarity got itemCount-1 amount of rolls.
     	int rolls = itemCount - 1; 
     	for(int i = 0; i < 6; i++) {
+    		if (rarityBuckets.get(i).isEmpty()) {
+    		    ammount.add(0);
+    		    continue;
+    		}
+    		
     		int count = 0;
     		
     		if(i < 3) {
@@ -210,6 +216,8 @@ public class CustomDropAnimationGui extends GuiScreen {
     	
     	// Fill the item into the carousel, using the amount list that has rolled, and extra algotihm to prefix rater item to get close to the reward item slot (extra copium added).
         for (int i = 6; i >= 0; i--) {
+        	if (rarityBuckets.get(i).isEmpty()) continue;
+        	
             if (i == 6) { // Common case
                 for (int j = 0; j < rolls; j++) {
                     DungeonDropData.Rule randomRule = rarityBuckets.get(i)
